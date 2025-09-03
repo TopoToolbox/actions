@@ -222,15 +222,13 @@ def warn_on_reusable_workflow(claims: dict[str, typing.Any]) -> None:
     # A reusable workflow is identified by having different values
     # for its workflow_ref (the initiating workflow) and job_workflow_ref
     # (the reusable workflow).
-    if claims.get('workflow_ref') == claims.get('job_workflow_ref'):
+    workflow_ref = claims.get('workflow_ref')
+    job_workflow_ref = claims.get('job_workflow_ref')
+
+    if workflow_ref == job_workflow_ref:
         return
 
-    warn(
-        _REUSABLE_WORKFLOW_WARNING.format(
-            job_workflow_ref=claims.get('job_workflow_ref'),
-            workflow_ref=claims.get('workflow_ref'),
-        ),
-    )
+    warn(_REUSABLE_WORKFLOW_WARNING.format_map(locals()))
 
 
 def event_is_third_party_pr() -> bool:

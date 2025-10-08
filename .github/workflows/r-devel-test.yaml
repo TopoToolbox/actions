@@ -8,6 +8,8 @@ on:
         - 'stable'
         - 'rc'
         - 'devel'
+        - 'repo'
+        - 'none'
         default: 'stable'
 
 name: R-devel test
@@ -24,8 +26,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: macos-15,         r: 'devel'}
           - {os: macos-latest,     r: 'devel'}
+          - {os: macos-15-intel,   r: 'devel'}
           - {os: windows-latest,   r: 'devel'}
           - {os: windows-11-arm,   r: 'devel'}
           - {os: ubuntu-latest,    r: 'devel'}

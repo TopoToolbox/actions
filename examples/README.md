@@ -95,8 +95,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -165,7 +163,6 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -248,7 +245,6 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -306,8 +302,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -377,8 +371,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -437,7 +429,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -599,8 +590,6 @@ jobs:
       - uses: r-lib/actions/setup-pandoc@v2
 
       - uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -655,7 +644,6 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
 
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -711,7 +699,6 @@ jobs:
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
 
       - name: Install styler and roxygen2
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -817,7 +804,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
           r-version: renv
 
       - uses: r-lib/actions/setup-renv@v2
@@ -877,7 +863,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
           r-version: renv
 
       - uses: r-lib/actions/setup-renv@v2
@@ -970,7 +955,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
           r-version: renv
 
       - uses: r-lib/actions/setup-renv@v2
@@ -1027,7 +1011,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
           r-version: renv
 
       - uses: r-lib/actions/setup-renv@v2
@@ -1112,7 +1095,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
           r-version: renv
 
       - uses: r-lib/actions/setup-renv@v2
@@ -1188,7 +1170,6 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          use-public-rspm: true
 
       - name: Install lintr
         run: install.packages("lintr")

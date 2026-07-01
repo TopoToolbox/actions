@@ -22,3 +22,6 @@
 [submodule "setup-matlab"]
 	path = setup-matlab
 	url = https://github.com/matlab-actions/setup-matlab
+[submodule "upload-pages-artifact"]
+	path = upload-pages-artifact
+	url = https://github.com/actions/upload-pages-artifact

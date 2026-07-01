@@ -19,3 +19,6 @@
 [submodule "run-build"]
 	path = run-build
 	url = https://github.com/matlab-actions/run-build
+[submodule "setup-matlab"]
+	path = setup-matlab
+	url = https://github.com/matlab-actions/setup-matlab

@@ -7,3 +7,6 @@
 [submodule "upload-artifact"]
 	path = upload-artifact
 	url = https://github.com/actions/upload-artifact
+[submodule "setup-python"]
+	path = setup-python
+	url = https://github.com/actions/setup-python

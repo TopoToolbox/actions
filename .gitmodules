@@ -28,3 +28,6 @@
 [submodule "deploy-pages"]
 	path = deploy-pages
 	url = https://github.com/actions/deploy-pages
+[submodule "r-lib/actions"]
+	path = r-lib/actions
+	url = https://github.com/r-lib/actions

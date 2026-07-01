@@ -25,3 +25,6 @@
 [submodule "upload-pages-artifact"]
 	path = upload-pages-artifact
 	url = https://github.com/actions/upload-pages-artifact
+[submodule "deploy-pages"]
+	path = deploy-pages
+	url = https://github.com/actions/deploy-pages

@@ -1,3 +1,6 @@
 [submodule "checkout"]
 	path = checkout
 	url = https://github.com/actions/checkout
+[submodule "cache"]
+	path = cache
+	url = https://github.com/actions/cache

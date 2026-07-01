@@ -4,3 +4,6 @@
 [submodule "cache"]
 	path = cache
 	url = https://github.com/actions/cache
+[submodule "upload-artifact"]
+	path = upload-artifact
+	url = https://github.com/actions/upload-artifact

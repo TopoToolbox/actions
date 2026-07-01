@@ -13,3 +13,6 @@
 [submodule "download-artifact"]
 	path = download-artifact
 	url = https://github.com/actions/download-artifact
+[submodule "gh-action-pypi-publish"]
+	path = gh-action-pypi-publish
+	url = https://github.com/pypa/gh-action-pypi-publish

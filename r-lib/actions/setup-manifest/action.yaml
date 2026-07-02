@@ -1,0 +1,23 @@
+name: 'setup-manifest'
+description: |
+  Set up R, renv and dependencies for a Posit Connect `manifest.json`
+  file.
+
+runs:
+  using: composite
+  steps:
+    - name: Create or update renv.lock
+      run: |
+        docker run -v `pwd`:/repo --workdir /repo \
+          ghcr.io/r-hub/r-minimal/r-minimal:latest \
+          R -q -e 'install.packages("renv", repos = "https://cran.rstudio.com"); renv:::renv_lockfile_from_manifest("manifest.json", "renv.lock")'
+      shell: bash
+
+    - name: Install R
+      uses: r-lib/actions/setup-r@9f58233a78a2a9fd874714be10f8bba627233339
+      with:
+        r-version: renv
+        use-public-rspm: true
+
+    - name: Install R packages via renv
+      uses: r-lib/actions/setup-renv@9f58233a78a2a9fd874714be10f8bba627233339

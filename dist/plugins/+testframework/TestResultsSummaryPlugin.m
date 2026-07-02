@@ -24,7 +24,7 @@ classdef TestResultsSummaryPlugin < matlab.unittest.plugins.TestRunnerPlugin
 
             try
                 jsonTestResults = jsonencode(testDetails, "PrettyPrint", true);
-                testArtifactFile = fullfile(getenv("RUNNER_TEMP"), "matlabTestResults_" + string(datetime('now', 'Format', 'yyyyMMdd_HHmmss_SSS')) + ".json");
+                testArtifactFile = fullfile(getenv("RUNNER_TEMP"), "matlabTestResults" + getenv("GITHUB_ACTION") + "_" + string(datetime('now', 'Format', 'yyyyMMdd_HHmmss_SSS')) + ".json");
                 [fID, msg] = fopen(testArtifactFile, "w");
                 if fID == -1
                     warning("testframework:TestResultsSummaryPlugin:UnableToOpenFile","Unable to open a file required to create the table of test results. (Cause: %s)", msg);

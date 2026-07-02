@@ -1,16 +1,16 @@
 ---
-name: "@azure/storage-common"
-version: 12.4.0
+name: fast-xml-builder
+version: 1.2.0
 type: npm
-summary: Azure Storage Common Client Library for JavaScript
-homepage: https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/storage/storage-common/README.md
+summary: Build XML from JSON without C/C++ based libraries
+homepage: 
 license: mit
 licenses:
 - sources: LICENSE
-  text: |-
-    The MIT License (MIT)
+  text: |
+    MIT License
 
-    Copyright (c) 2018 Microsoft
+    Copyright (c) 2026 Natural Intelligence
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

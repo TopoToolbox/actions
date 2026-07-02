@@ -1,8 +1,8 @@
 ---
-name: strnum
-version: 2.4.1
+name: fast-xml-builder
+version: 1.2.0
 type: npm
-summary: Parse String to Number based on configuration
+summary: Build XML from JSON without C/C++ based libraries
 homepage: 
 license: mit
 licenses:
@@ -10,7 +10,7 @@ licenses:
   text: |
     MIT License
 
-    Copyright (c) 2021 Natural Intelligence
+    Copyright (c) 2026 Natural Intelligence
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal

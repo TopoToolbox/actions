@@ -1,0 +1,247 @@
+name: Build and Test
+on: [push]
+permissions:
+  contents: read
+
+jobs:
+  bat:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Perform npm tasks
+        run: npm run ci
+      - uses: actions/upload-artifact@v7
+        with:
+          name: built-action
+          path: |
+            **/*
+            !node_modules/
+  integ:
+    needs: bat
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-14]
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: built-action
+
+      - name: Perform 'setup-matlab'
+        uses: matlab-actions/setup-matlab@v3
+        with:
+          products: MATLAB_Test
+
+      - name: Create buildfile.m in project root for tests
+        shell: bash
+        run: |
+          cat <<'_EOF' >> "buildfile.m"
+            function plan = buildfile
+            import matlab.buildtool.tasks.TestTask
+
+            plan = buildplan(localfunctions);
+            plan("preMadeTest") = TestTask;
+            plan("preMadeTest").Dependencies = "build";
+            plan("test").Dependencies = "build";
+            plan("deploy").Dependencies = "test";
+
+            plan.DefaultTasks = "test";
+            end
+
+            function buildTask(~)
+            f = fopen('buildlog.txt', 'a+'); fprintf(f, 'building\n'); fclose(f);
+            end
+
+            function testTask(~,tests,options)
+            arguments
+              ~
+              tests string = "tests"
+              options.OutputDetail (1,1) string = "terse"
+            end
+            f = fopen('buildlog.txt', 'a+');
+            fprintf(f, 'testing\n');
+            fprintf(f, '%s\n', tests);
+            fprintf(f, '%s\n', options.OutputDetail);
+            fclose(f);
+            end
+
+            function deployTask(~)
+            f = fopen('buildlog.txt', 'a+'); fprintf(f, 'deploying\n'); fclose(f);
+            end
+
+            function checkTask(~)
+            f = fopen('buildlog.txt', 'a+'); fprintf(f, 'checking\n'); fclose(f);
+            end
+            
+            function errorTask(~)
+            f = fopen('buildlog.txt', 'a+'); fprintf(f, 'erroring\n'); fclose(f);
+            error('Error occured in errorTask');
+            end
+          _EOF
+
+      - name: Run build with default tasks
+        uses: ./
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          grep "testing" buildlog.txt
+          grep "tests" buildlog.txt
+          grep "terse" buildlog.txt
+          ! grep "deploying" buildlog.txt
+          ! grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with specified task
+        uses: ./
+        with:
+          tasks: deploy
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          grep "testing" buildlog.txt
+          grep "tests" buildlog.txt
+          grep "terse" buildlog.txt
+          grep "deploying" buildlog.txt
+          ! grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with multiple specified tasks
+        uses: ./
+        with:
+          tasks: deploy check
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          grep "testing" buildlog.txt
+          grep "tests" buildlog.txt
+          grep "terse" buildlog.txt
+          grep "deploying" buildlog.txt
+          grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with task args
+        uses: ./
+        with:
+          tasks: test("myTests", OutputDetail="concise")
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          grep "testing" buildlog.txt
+          grep "myTests" buildlog.txt
+          grep "concise" buildlog.txt
+          ! grep "deploying" buildlog.txt
+          ! grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with startup options
+        uses: ./
+        with:
+          startup-options: -logfile console.log
+
+      - name: Verify tasks appear in buildlog.txt and console.log
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          grep "build" console.log
+          grep "testing" buildlog.txt
+          grep "tests" buildlog.txt
+          grep "terse" buildlog.txt
+          grep "test" console.log
+          ! grep "deploying" buildlog.txt
+          ! grep "deploy" console.log
+          ! grep "checking" buildlog.txt
+          ! grep "check" console.log
+          rm buildlog.txt
+          rm console.log
+
+      - name: Run build with task skipping
+        uses: ./
+        with:
+          tasks: deploy
+          build-options: -skip test
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "building" buildlog.txt
+          ! grep "testing" buildlog.txt
+          ! grep "tests" buildlog.txt
+          ! grep "terse" buildlog.txt
+          grep "deploying" buildlog.txt
+          ! grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with continue on failure
+        continue-on-error: true
+        uses: ./
+        with:
+          tasks: error deploy
+          build-options: -continueOnFailure
+
+      - name: Verify correct tasks appear in buildlog.txt
+        shell: bash
+        run: |
+          set -e
+          grep "erroring" buildlog.txt
+          grep "building" buildlog.txt
+          grep "testing" buildlog.txt
+          grep "tests" buildlog.txt
+          grep "terse" buildlog.txt
+          grep "deploying" buildlog.txt
+          ! grep "checking" buildlog.txt
+          rm buildlog.txt
+
+      - name: Run build with startup options
+        continue-on-error: true
+        uses: ./
+        with:
+          tasks: deploy error
+          build-options: -continueOnFailure
+          startup-options: -logfile console.log
+
+      - name: Verify workflow command is added
+        shell: bash
+        run: |
+          grep "::group::deploy" console.log
+          grep "::error::error task failed" console.log
+          rm console.log
+
+      - name: Run build with premade TestTask for test summary
+        uses: ./
+        with:
+          tasks: preMadeTest
+
+      - name: Run build with invalid task
+        continue-on-error: true
+        uses: ./
+        with:
+          tasks: badTask
+          build-options: -continueOnFailure
+          startup-options: -logfile console.log
+
+      - name: Verify summary exception for invalid task
+        shell: bash
+        run: |
+          set -e
+          ! grep "while reading the build summary file:" console.log
+          ! grep "trying to delete the build summary" console.log
+          rm console.log

@@ -1,0 +1,128 @@
+TopoToolbox GitHub Actions
+==========================
+
+This repository serves as a single source of truth for the third-party
+actions that TopoToolbox projects use in their continuous integration
+setups.
+
+Basic Usage
+-----------
+
+My workflow for adding or updating a third-party action is therefore:
+
+1. Create a new branch for the update.
+2. Update versions.txt with the new commit SHA and version
+   number. Commit this change to the branch.
+3. Run git subtree to make the changes to the relevant action. There
+   should be three commits: the versions.txt update, the squashed
+   commits from the upstream repository, and the merge commit.
+4. Push the new branch to my fork on GitHub.
+5. Make a pull request to TopoToolbox/actions
+
+More details are provided below.
+
+Purpose
+-------
+
+We should always fix the version of each third-party action used in
+our GitHub Actions workflows by pinning the commit SHA of the version
+that we are going to use:
+
+uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+However, when these actions need to be updated, one must go through
+all of the TopoToolbox repositories and update these commit SHAs. This
+is tedious.
+
+This repository instead stores a copy of the code of each third-party
+action that we want to use in our workflows. The workflows in our
+repositories refer to this repository:
+
+uses: TopoToolbox/actions/checkout@main
+
+But note that they all refer to the main branch. This is safe because
+we control the TopoToolbox/actions repository. We choose when to
+update each third-party action. To do so, we update the source code
+within this repository.
+
+Detailed Usage
+--------------
+
+There are two tasks that you might want to accomplish: adding a new
+third-party action and updating the existing actions to a specific
+version. Both can be accomplished with a certain amount of git
+wrangling. The easiest way to do it is to use the git subtree command.
+
+See this article from Atlassian for more guidance on git subtree:
+
+https://www.atlassian.com/git/tutorials/git-subtree
+
+Adding a new third-party action:
+
+> git subtree add --squash --prefix <directory> <repository-url> <ref>
+
+This will add a new subtree at the given <directory> (the argument of
+the --prefix option). The <repository-url> is the URL of the action
+that you want to add. The <ref> is the commit SHA that you want to pin
+the repository to.
+
+This command will add the relevant commits from the upstream
+repository and then merge them into the HEAD commit of
+TopoToolbox/actions. The --squash argument squashes all of the source
+commits into one, which is a good idea since we don't really care
+about the commit history of the upstream repositories.
+
+I would typically create a new branch, then run git subtree, and then
+make pull request to TopoToolbox/actions.
+
+Updating a third-party action:
+
+> git subtree pull --squash --prefix <directory> <repository-url> <ref>
+
+This is basically the same except you use git subtree pull. The <ref>
+should be the commit SHA of the updated version.
+
+versions.txt
+------------
+
+The versions.txt file in this repository lists the actions and their
+commit SHAs and version numbers. This file is not functional, but it
+serves as useful documentation. When you want to update the actions,
+you can look at the file to see whether there has been a major, minor
+or patch version release since we last updated. The downside is that
+you have to update versions.txt manually when you update the subtrees.
+
+Testing
+-------
+
+Another downside of this way of managing the actions is that it is not
+easy to test the updates in the various TopoToolbox repositories. If
+you are particularly concerned about some updates -- because the
+upstream repository has made significant changes in a new version --
+you can create a branch in TopoToolbox/actions and then temporarily
+use that branch in the relevant TopoToolbox repository.
+
+For example, let's say I want to apply a major update to the
+matlab-actions/run-build action. I could create a branch called
+run-build-v4.0.0 in the TopoToolbox/actions repository and make the
+update only on that branch -- not on TopoToolbox/actions@main.
+
+Then I would go to the TopoToolbox/topotoolbox3 repository and, in the
+ci.yaml file, make the change
+
+uses: TopoToolbox/actions@run-build-v4.0.0
+
+and make a PR. This will run on the PR and give you some indication
+about whether it works. If you need to test something that only runs
+after the merge (like the docs or releases), then you'll need to
+temporarily merge the TopoToolbox/actions@run-build-v4.0.0 version and
+confirm that the updated actions work.
+
+Once you are convinced, you can merge the run-build-v4.0.0 branch into
+TopoToolbox/actions@main.
+
+For smaller version increments, I would just make the change here and
+then manually rerun the latest CI tests to make sure things work. If
+something goes wrong, revert the commit to TopoToolbox/actions and
+debug. Don't try to manually rerun the release jobs, though, because
+we don't want to try to recreate releases.
